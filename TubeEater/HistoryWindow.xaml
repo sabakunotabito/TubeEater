@@ -1,0 +1,304 @@
+﻿<mah:MetroWindow
+    x:Class="TubeEater.HistoryWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:mahapps="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+    Title="TubeEater"
+    Width="1024"
+    Height="640"
+    Background="{DynamicResource MaterialDesignPaper}"
+    FontFamily="{md:MaterialDesignFont}"
+    GlowBrush="{DynamicResource MaterialDesignShadowBrush}"
+    ResizeMode="CanResizeWithGrip"
+    ShowIconOnTitleBar="True"
+    TextElement.FontSize="14"
+    TextElement.FontWeight="Medium"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    TextOptions.TextFormattingMode="Ideal"
+    TextOptions.TextRenderingMode="Auto"
+    TitleCharacterCasing="Normal"
+    mc:Ignorable="d">
+    <!--  Main  -->
+    <md:DrawerHost IsLeftDrawerOpen="{Binding ElementName=toggleButtonMenu, Path=IsChecked}">
+        <DockPanel>
+            <!--  Header  -->
+            <md:ColorZone
+                Padding="16"
+                DockPanel.Dock="Top"
+                Mode="PrimaryMid">
+                <DockPanel HorizontalAlignment="Stretch">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                        <md:ColorZone
+                            Margin="48,0,0,0"
+                            Padding="8,4,8,4"
+                            Panel.ZIndex="1"
+                            md:ShadowAssist.ShadowDepth="Depth1"
+                            CornerRadius="2"
+                            Mode="Standard">
+                            <Grid x:Name="gridManual" Width="250">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox
+                                    x:Name="textBoxSearch"
+                                    Grid.Column="0"
+                                    MinWidth="150"
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    md:HintAssist.IsFloating="False"
+                                    md:TextFieldAssist.DecorationVisibility="Hidden"
+                                    md:TextFieldAssist.HasClearButton="True"
+                                    BorderThickness="0"
+                                    Cursor="IBeam" />
+                                <Button
+                                    x:Name="buttonSearch"
+                                    Grid.Column="1"
+                                    Style="{StaticResource MaterialDesignToolButton}">
+                                    <md:PackIcon
+                                        Margin="8,0,0,0"
+                                        Kind="Search"
+                                        Opacity=".56" />
+                                </Button>
+                                <ProgressBar
+                                    x:Name="progressBarDownload"
+                                    Grid.Column="2"
+                                    IsIndeterminate="False"
+                                    Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                    Visibility="Collapsed"
+                                    Value="0" />
+                            </Grid>
+                        </md:ColorZone>
+
+                        <md:PopupBox
+                            Margin="8,0,0,0"
+                            PlacementMode="BottomAndAlignRightEdges"
+                            StaysOpen="True">
+                            <StackPanel>
+                                <TextBlock
+                                    x:Name="textBlockOptions"
+                                    Margin="16,4,16,4"
+                                    Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+
+                                <GroupBox
+                                    x:Name="groupBoxKeywords"
+                                    Margin="16,8,16,8"
+                                    md:ColorZoneAssist.Mode="PrimaryMid"
+                                    Style="{StaticResource MaterialDesignCardGroupBox}">
+                                    <GroupBox.HeaderTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <md:PackIcon
+                                                    Width="24"
+                                                    Height="24"
+                                                    VerticalAlignment="Center"
+                                                    Kind="TagSearch" />
+                                                <TextBlock
+                                                    Margin="8,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                                    Text="{Binding}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </GroupBox.HeaderTemplate>
+                                    <StackPanel
+                                        Height="48"
+                                        HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            x:Name="textBlockTitle"
+                                            VerticalAlignment="Center"
+                                            Style="{StaticResource MaterialDesignSubtitle2TextBlock}" />
+                                        <ToggleButton
+                                            x:Name="toggleButtonIsDark"
+                                            Margin="18,0,18,0"
+                                            HorizontalAlignment="Center"
+                                            Cursor="Hand"
+                                            Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" />
+                                        <TextBlock
+                                            x:Name="textBlockAuthor"
+                                            VerticalAlignment="Center"
+                                            Style="{StaticResource MaterialDesignSubtitle2TextBlock}" />
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <GroupBox
+                                    x:Name="groupBoxRefine"
+                                    Margin="16,8,16,8"
+                                    md:ColorZoneAssist.Mode="PrimaryMid"
+                                    Style="{StaticResource MaterialDesignCardGroupBox}">
+                                    <GroupBox.HeaderTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <md:PackIcon
+                                                    Width="24"
+                                                    Height="24"
+                                                    VerticalAlignment="Center"
+                                                    Kind="TagSearch" />
+                                                <TextBlock
+                                                    Margin="8,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                                    Text="{Binding}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </GroupBox.HeaderTemplate>
+                                    <StackPanel>
+                                        <CheckBox
+                                            x:Name="checkBoxVideoMp4"
+                                            Margin="0,4,0,4"
+                                            HorizontalAlignment="Center"
+                                            Background="{DynamicResource SecondaryHueMidBrush}"
+                                            Cursor="Hand"
+                                            IsChecked="True"
+                                            Style="{StaticResource MaterialDesignFilterChipCheckBox}" />
+                                        <CheckBox
+                                            x:Name="checkBoxAudioAac"
+                                            Margin="0,4,0,4"
+                                            HorizontalAlignment="Center"
+                                            Background="{DynamicResource SecondaryHueMidBrush}"
+                                            Cursor="Hand"
+                                            Style="{StaticResource MaterialDesignFilterChipCheckBox}" />
+                                        <CheckBox
+                                            x:Name="checkBoxAudioMp3"
+                                            Margin="0,4,0,4"
+                                            HorizontalAlignment="Center"
+                                            Background="{DynamicResource SecondaryHueMidBrush}"
+                                            Cursor="Hand"
+                                            Style="{StaticResource MaterialDesignFilterChipCheckBox}" />
+                                    </StackPanel>
+                                </GroupBox>
+                            </StackPanel>
+                        </md:PopupBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <ToggleButton
+                            x:Name="toggleButtonMenu"
+                            IsEnabled="False"
+                            Style="{StaticResource MaterialDesignHamburgerToggleButton}" />
+                        <Button
+                            x:Name="buttonSync"
+                            Margin="64,0,0,0"
+                            Cursor="Hand"
+                            Style="{StaticResource MaterialDesignFloatingActionMiniSecondaryButton}">
+                            <DockPanel LastChildFill="True">
+                                <md:PackIcon
+                                    Width="24"
+                                    Height="24"
+                                    Kind="TableSync" />
+                            </DockPanel>
+                        </Button>
+                        <TextBlock
+                            x:Name="textBlockCounter"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource MaterialDesignBody1TextBlock}" />
+                    </StackPanel>
+                </DockPanel>
+            </md:ColorZone>
+
+            <md:Snackbar
+                x:Name="snackbarMessage"
+                HorizontalAlignment="Stretch"
+                DockPanel.Dock="Bottom"
+                MessageQueue="{md:MessageQueue}" />
+            <!--  Body  -->
+            <DataGrid
+                x:Name="dataGridHistory"
+                AllowDrop="False"
+                AutoGenerateColumns="False"
+                FrozenColumnCount="1"
+                HorizontalScrollBarVisibility="Auto"
+                IsReadOnly="True"
+                SelectionMode="Extended"
+                Style="{StaticResource MaterialDesignDataGrid}">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn x:Name="dgtColumnNumber">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Right" Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=Header}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn x:Name="dgtColumnTitle" Binding="{Binding Title}" />
+                    <DataGridTextColumn x:Name="dgtColumnAuthor" Binding="{Binding Author}" />
+                    <DataGridTextColumn x:Name="dgtColumnTimeSpan" Binding="{Binding TimeSpan}" />
+                    <DataGridTemplateColumn x:Name="dgtColumnLength">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Right" Text="{Binding ContentLength, StringFormat=\{0:N0\}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn x:Name="dgtColumnCodec" Binding="{Binding Codec}" />
+                    <DataGridTemplateColumn x:Name="dgtColumnResolution">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Right" Text="{Binding Resolution}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn x:Name="dgtColumnFps">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Right" Text="{Binding Fps}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn x:Name="dgtColumnAudioBitrate">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Right" Text="{Binding AudioBitrate}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn x:Name="dgtColumnCreate" Binding="{Binding Created, StringFormat=\{0:yyyy/MM/dd HH:mm\}}" />
+                    <DataGridTextColumn x:Name="dgtColumnUpdate" Binding="{Binding Updated, StringFormat=\{0:yyyy/MM/dd HH:mm\}}" />
+                    <DataGridTextColumn x:Name="dgtColumnTerm" Binding="{Binding Span, StringFormat=\{0:d\\日\\ hh\\:mm\}}" />
+                </DataGrid.Columns>
+                <DataGrid.ContextMenu>
+                    <ContextMenu Style="{StaticResource MaterialDesignContextMenu}">
+                        <MenuItem x:Name="menuItemCopy" Command="ApplicationCommands.Copy">
+                            <MenuItem.Icon>
+                                <md:PackIcon Kind="ContentCopy" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem x:Name="menuItemOpenBrowser">
+                            <MenuItem.Icon>
+                                <md:PackIcon Kind="OpenInApp" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="menuItemOpenExplorer">
+                            <MenuItem.Icon>
+                                <md:PackIcon Kind="FolderOpen" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <!--<Separator />
+                        <MenuItem x:Name="menuItemPlay">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon
+                                    Width="20"
+                                    Height="20"
+                                    Kind="Play" />
+                            </MenuItem.Icon>
+                        </MenuItem>-->
+                        <Separator />
+                        <MenuItem x:Name="menuItemDelete">
+                            <MenuItem.Icon>
+                                <md:PackIcon Kind="Delete" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+            </DataGrid>
+        </DockPanel>
+    </md:DrawerHost>
+</mah:MetroWindow>
