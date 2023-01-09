@@ -59,6 +59,7 @@ namespace TubeEater
                     ["e1003"] = "YouTube の解析に失敗しました。ダウンロード予約はキャンセルされます。",
                     ["e1004"] = "履歴表示に問題が発生しました。",
                     ["e1005"] = "ライブ配信はダウンロードできません。",
+                    ["e1006"] = "AACからMP3への変換に失敗しました。",
 
                     // 警告
                     ["w1001"] = "まだダウンロード中です。本当に終了しますか？",
@@ -167,6 +168,7 @@ namespace TubeEater
                     ["e1003"] = "YouTube analysis failed. The download reservation will be cancelled.",
                     ["e1004"] = "There was a problem with the History display.",
                     ["e1005"] = "This is a live stream so it's not available.",
+                    ["e1006"] = "Failed to convert AAC to MP3.",
 
                     // Warning
                     ["w1001"] = "It is still being downloaded. Do you really finish?",

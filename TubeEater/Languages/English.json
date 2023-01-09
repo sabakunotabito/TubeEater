@@ -1,6 +1,6 @@
 {
-    "Name": "English",
-    "Locale": "en-US",
+  "Name": "English",
+  "Locale": "en-US",
   "Messages": {
     "c0001": "Ok",
     "c0002": "Cancel",
@@ -12,6 +12,7 @@
     "e1003": "YouTube analysis failed. The download reservation will be cancelled.",
     "e1004": "There was a problem with the History display.",
     "e1005": "This is a live stream so it's not available.",
+    "e1006": "Failed to convert AAC to MP3.",
     "w1001": "It is still being downloaded. Do you really finish?",
     "w1002": "the reserved URL will be resumed after the newxt launch.",
     "w1003": "'{0}' - {1} has already been saved.",

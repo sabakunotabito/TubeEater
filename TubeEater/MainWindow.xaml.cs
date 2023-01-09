@@ -1,10 +1,12 @@
 ﻿using MahApps.Metro.Controls.Dialogs;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.VisualBasic;
 using NAudio.MediaFoundation;
 using NAudio.Wave;
 using Newtonsoft.Json;
 using NLog;
+using NLog.Config;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,8 +24,10 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Markup;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using TagLib.Gif;
 using VideoLibrary;
 
 namespace TubeEater
@@ -310,6 +314,11 @@ namespace TubeEater
                     }
                 }
 
+                // チェックボックスの値を保存する
+                Configs.IsVideoMp4 = checkBoxVideoMp4.IsChecked;
+                Configs.IsAudioAac = checkBoxAudioAac.IsChecked;
+                Configs.IsAudioMp3 = checkBoxAudioMp3.IsChecked;
+
                 // 設定情報の読込み
                 _logger.Info("Read the setting information from the database.");
                 PutSettingsItem(1, Configs);                // 全般設定
@@ -432,6 +441,9 @@ namespace TubeEater
             comboBoxPrimary.SelectedIndex = Designs.MdxToolItems.Where(p => p.Name.ToLower().Equals(Configs.PrimaryColor.ToLower(), StringComparison.Ordinal)).Select(p => p.Value).First();
             comboBoxSecondary.SelectedIndex = Designs.MdxToolItems.Where(p => p.Name.ToLower().Equals(Configs.SecondaryColor.ToLower(), StringComparison.Ordinal)).Select(p => p.Value).First();
             checkBoxIsColorAdjustment.IsChecked = Configs.IsColorAdjustment;
+            if (Configs.IsVideoMp4 != null) checkBoxVideoMp4.IsChecked = Configs.IsVideoMp4;
+            if (Configs.IsAudioAac != null) checkBoxAudioAac.IsChecked = Configs.IsAudioAac;
+            if (Configs.IsAudioMp3 != null) checkBoxAudioMp3.IsChecked = Configs.IsAudioMp3;
 
             // 予約残の復元
             await RestoreRemainedData();
@@ -451,19 +463,20 @@ namespace TubeEater
 
             var result = await this.ShowMessageAsync(Title, MsgMgr.GetMessage("i0101"), MessageDialogStyle.AffirmativeAndNegative,
                 new MetroDialogSettings { AffirmativeButtonText = MsgMgr.GetMessage("c0001"), NegativeButtonText = MsgMgr.GetMessage("c0002"), DefaultText = MsgMgr.GetMessage("c0001") });
-            if (result == MessageDialogResult.Negative) return;
-
-            // データを復元する
-            _logger.Info("Resume download.");
-            IsEnabled = false;
-            foreach (var data in Configs.RemainedData)
+            if (result != MessageDialogResult.Negative)
             {
-                var videos = await YouTube.Default.GetAllVideosAsync(data.YouTubeUri?.AbsoluteUri);  // YouTubeから情報取得
-                (data.Items, _, _) = data.Codec.Equals("MP4") ? GetVideoInfo(videos, data.Codec) : GetAudioInfo(videos, data.Codec);
-                _downloadQueue.Enqueue(data);       // 予約キューに格納
-                _resources.Add(data);               // メディアデータに格納
+                // データを復元する
+                _logger.Info("Resume download.");
+                IsEnabled = false;
+                foreach (var data in Configs.RemainedData)
+                {
+                    var videos = await YouTube.Default.GetAllVideosAsync(data.YouTubeUri?.AbsoluteUri);  // YouTubeから情報取得
+                    (data.Items, _, _) = data.Codec.Equals("MP4") ? GetVideoInfo(videos, data.Codec) : GetAudioInfo(videos, data.Codec);
+                    _downloadQueue.Enqueue(data);       // 予約キューに格納
+                    _resources.Add(data);               // メディアデータに格納
+                }
+                IsEnabled = true;
             }
-            IsEnabled = true;
             Configs.RemainedData.Clear();
         }
 
@@ -477,35 +490,38 @@ namespace TubeEater
             {
                 // 言語ファイルが格納されていれば、読み込んで設定する
                 var dir = new DirectoryInfo(Path.Combine(basePath, "Languages"));
-                if (!dir.Exists) return;                                // 意図的に削除した？
-                foreach (var file in dir.GetFiles("*.json"))
+                //if (!dir.Exists) return;                                // 意図的に削除した？
+                if (dir.Exists)
                 {
-                    try
+                    foreach (var file in dir.GetFiles("*.json"))
                     {
-                        var json = File.ReadAllText(file.FullName);
-                        var data = JsonConvert.DeserializeObject<MessageManager.LangData>(json);
-                        if (data == null) continue;
-                        data.Update = file.LastWriteTime;
-                        var lang = MsgMgr.Languages.Where(p => p.Name == data.Name).FirstOrDefault();
-                        switch (lang)
+                        try
                         {
-                            case null:
-                                MsgMgr.Languages.Add(data);             // 新規追加
-                                break;
-                            default:
-                                if (lang.Update < file.LastWriteTime)   // 更新日が新しい
-                                {
-                                    MsgMgr.Languages.Remove(lang);      // 現行を削除する
-                                    MsgMgr.Languages.Add(data);         // 最新を追加する
-                                }
-                                break;
+                            var json = System.IO.File.ReadAllText(file.FullName);
+                            var data = JsonConvert.DeserializeObject<MessageManager.LangData>(json);
+                            if (data == null) continue;
+                            data.Update = file.LastWriteTime;
+                            var lang = MsgMgr.Languages.Where(p => p.Name == data.Name).FirstOrDefault();
+                            switch (lang)
+                            {
+                                case null:
+                                    MsgMgr.Languages.Add(data);             // 新規追加
+                                    break;
+                                default:
+                                    if (lang.Update < file.LastWriteTime)   // 更新日が新しい
+                                    {
+                                        MsgMgr.Languages.Remove(lang);      // 現行を削除する
+                                        MsgMgr.Languages.Add(data);         // 最新を追加する
+                                    }
+                                    break;
+                            }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        var error = MsgMgr.GetMessage("e1001");
-                        _logger.Error(ex, error);
-                        await this.ShowMessageAsync("ERROR", error);
+                        catch (Exception ex)
+                        {
+                            var error = MsgMgr.GetMessage("e1001");
+                            _logger.Error(ex, error);
+                            await this.ShowMessageAsync("ERROR", error);
+                        }
                     }
                 }
             }
@@ -525,6 +541,25 @@ namespace TubeEater
             // 前回設定した言語がある
             if (0 < Configs.SelectedLanguage.Length)
             {
+                var idx = 0;
+                for (int i = 0; i < MsgMgr.Languages.Count; i++)
+                {
+                    if (MsgMgr.Languages[i].Name.Equals(MsgMgr.CurrentLang))
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+                if (MsgMgr.Default.Messages.Count != MsgMgr.Languages[idx].Messages.Count)
+                {
+                    foreach (var kv in MsgMgr.Default.Messages)
+                    {
+                        var key = kv.Key;
+                        if (MsgMgr.Languages[idx].Messages.ContainsKey(key)) continue;
+                        MsgMgr.Languages[idx].Messages.Add(key, kv.Value);
+                    }
+                }
+
                 var lang = MsgMgr.Languages.FirstOrDefault(p => p.Name.Equals(Configs.SelectedLanguage));
                 if (lang != null)
                 {
@@ -689,9 +724,10 @@ namespace TubeEater
                                 if (dir != null && !dir.Exists) dir.Create();
                                 if (t.IsCompletedSuccessfully)
                                 {
-                                    var bs = t.Result;                              // ダウンロードしたバイト情報
-                                    File.WriteAllBytesAsync(target.FullName, bs);
+                                    var bs = t.Result;                                              // ダウンロードしたバイト情報
+                                    System.IO.File.WriteAllBytesAsync(target.FullName, bs);
                                     _currentData.ContentLength = bs.Length;
+
                                     isSuccess = true;
                                 }
                                 else if (tryCnt < _currentData.Items.Count)
@@ -714,7 +750,7 @@ namespace TubeEater
                                 isSuccess = true;
 
                                 // MP3だけの時は AACを削除する
-                                if (!backupExist) File.Delete(_currentData.SavePath);
+                                if (!backupExist) System.IO.File.Delete(_currentData.SavePath);
                             }
                         });
                         if (isSuccess) break;   // 成功判定
@@ -773,12 +809,28 @@ namespace TubeEater
             var mp3Path = string.Concat(target.FullName.AsSpan(0, target.FullName.Length - 3), "mp3");
             _logger.Info($"Convert AAC to MP3: {mp3Path}");
 
+            // AAC -> MP3 & Edit Title.
             await Task.Run(() =>
             {
-                var reader = new MediaFoundationReader(target.FullName);
-                var mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_MP3, reader.WaveFormat, reader.WaveFormat.BitsPerSample);
-                using var encoder = new MediaFoundationEncoder(mediaType);
-                encoder.Encode(mp3Path, reader);
+                // from AAC to MP3
+                try
+                {
+                    var reader = new MediaFoundationReader(target.FullName);
+                    var mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_MP3, reader.WaveFormat, reader.WaveFormat.BitsPerSample);
+                    using var encoder = new MediaFoundationEncoder(mediaType);
+                    encoder.Encode(mp3Path, reader);
+                }
+                catch (Exception ex)
+                {
+                    var error = MsgMgr.GetMessage("e1006");
+                    _logger.Error($"{error} {ex.Message}");
+                    if (System.IO.File.Exists(mp3Path))
+                    {
+                        _logger.Warn($"Delete file: {mp3Path}");
+                        System.IO.File.Delete(mp3Path);
+                    }
+                    throw;
+                }
 
                 // MP3変換後に情報を付加する
                 using var tfile = TagLib.File.Create(mp3Path);          // MP3読込み
@@ -1065,7 +1117,9 @@ namespace TubeEater
             var media = medias[0];
             var basePath = Path.Combine(AudioPath, string.Join("_", media.Info.Author.Split(Path.GetInvalidFileNameChars())));
             var filePath = Path.Combine(basePath, 0 < media.FileExtension.Length ? media.FullName : $"{media.FullName}.aac");
-            var isCreate = codec.ToLower().Equals("aac") || (checkBoxAudioAac.IsChecked ?? false);
+            var aacFlag = checkBoxAudioAac.IsChecked ?? false;
+            var mp3Flag = checkBoxAudioMp3.IsChecked ?? false;
+            var isCreate = codec.ToLower().Equals("aac") || aacFlag || (!aacFlag && mp3Flag);
             _logger.Debug($"Max={medias.Count}, {codec}: {media.Title}, {media.Info.Author}, {media.Resolution}, {media.Fps}, {media.AudioBitrate}");
             return (medias, filePath, isCreate);
         }
