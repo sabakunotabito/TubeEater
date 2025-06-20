@@ -1,74 +1,57 @@
-﻿# TubeEator
+# TubeEater
 
-YouTube がダウンロードを禁止していることを確認せずに開発してしまいました。
-ただし、「クリエイティブ・コモンズ」として、認められている場合は、
-ダウンロードが許可されるようです。
+> **⚠️ 重要なお知らせ：このプロジェクトは開発を中止しており、ソースコードは教育・研究目的でのみ公開されています ⚠️**
+>
+> このアプリケーションは、YouTubeの利用規約を十分に確認しないまま開発を進めてしまった、いわば**「失敗の記録」**です。
+>
+> 現在、YouTubeの仕様変更により、このアプリケーションの核となるライブラリ (`VideoLibrary`) が機能しなくなっており、**このコードをビルドしてもコンテンツをダウンロードすることはできません。**
+>
+> このリポジトリは、開発中止に至った経緯と、その過程で得られた技術的な知見を、将来のプロジェクトへの教訓として残すために公開されています。
 
-このため、TubeEater のダウンロードを目的とするよりも、
-「マテリアルデザイン、カラー変更、非同期、EntityFramework、多言語対応、クリップボード監視、インストーラ作成」など、
-アプリ開発の参考に利用することを主たる目的として頂きたいと思います。
-そのうち、ダウンロード機能をビューワ機能に変更しようかと考えています。
+---
 
-TubeEater は YouTube ダウンローダーと呼ばれているアプリケーションに属します。
-TubeEater を起動し、YouTube の URL を指定することで、
-YouTube のコンテンツをダウンロードすることができます。
+## 概要 (Overview)
 
-YouTube に公開されたコンテンツには著作権があります。
-著作者の許可なく SNS などのサイトへアップロードしたり、
-記憶媒体に保存して第三者への譲渡は行わないでください。
-あくまでも、個人的に楽しむこととし、それ以外の利用は絶対に行わないでください。
+**TubeEater** は、かつてYouTubeのコンテンツをダウンロードするために開発された、WPFベースのデスクトップアプリケーションのソースコードです。
 
-# 特徴
+このプロジェクトの価値は、ダウンロード機能にはありません。
+当初はMVVMパターンとPrismフレームワークの導入を目指しましたが、道半ばで断念した経緯があります。
+その試行錯誤の結果として、WPFアプリケーション開発における、以下のような**技術的な実装例のサンプル**として、このソースコードを活用していただければ幸いです。
 
-- TubeEater の操作は、自動ダウンロードボタンをクリックするだけです。
-- マテリアルデザインを使った画面で、誰もが使えるようにシンプルな操作にしました。
-- テーマ・色も好みに合わせてカスタマイズできるようになっています。
-- 多言語対応で、Languages 配下に JSON ファイルを追加するだけです。
+*   **モダンなUI設計:** Material Design (MaterialDesignInXamlToolkit) と MahApps.Metro
+*   **非同期処理:** クリップボード監視と連携したバックグラウンド処理
+*   **データ永続化:** Entity Framework Core (SQLite) を用いた履歴管理
+*   **多言語対応:** JSONファイルによる動的な言語切り替え
+*   **メディア操作:** NAudio, TagLib# を利用した音声フォーマット変換とタグ編集
+*   **インストーラ作成:** Visual Studio Installer Projects の活用例
 
-# 動作条件
+## 注意事項 (Disclaimer)
 
-TubeEater は Windows 10 および Windows 11 の .NET 6 上で動作するアプリケーションです。
+YouTubeに公開されたコンテンツには著作権があります。このリポジトリのコードは、あくまで技術的な学習目的でのみ参照してください。コンテンツのダウンロード、再配布、譲渡は、各国の法律およびYouTubeの利用規約に抵触する可能性があります。
 
-このため、TubeEater を実行するには、.NET Desktop Runtime ランタイムが必要になります。
-お使いの Windows 環境に .NET 6 Desktop Runtime が必要になります。
+## 開発環境 (Development Environment)
 
-必要に応じて .NET 6 の最新版をダウンロードし、Windows 環境にインストールしてください。
+このアプリケーションが開発された当時の環境は以下の通りです。
 
-- [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/ja-jp/download/dotnet/6.0)
+*   **OS:** Windows 10 / 11
+*   **IDE:** Visual Studio 2022
+*   **フレームワーク:** .NET 6
 
+## 開発の記録 (Development Journey)
 
-# インストール
+このアプリケーションが、どのような経緯で生まれ、そして幻となったのか。その開発過程は、ブログに詳しく記されています。
 
-[Release](https://github.com/sabakunotabito/TubeEater/releases) から最新版のインストーラをダウンロードし、インストールしてください。
+![TubeEater Screenshot](https://github.com/sabakunotabito/tubeeater/blob/images/TubeEater01.png)
 
+*   **[砂漠の旅人 - TubeEater開発譚](https://sabakunotabito.hatenablog.com/archive/category/TubeEater)**
 
-# 使い方
+## 謝辞 (Acknowledgements)
 
-デスクトップの TubeEater ショートカットをクリックすることで起動します。
+TubeEaterは、以下の素晴らしいライブラリの力によって成り立っていました。各ライブラリの作者様、そしてコントリビューターの方々に、心から感謝申し上げます。
 
-TubeEater 起動後、画面上部に自動ダウンロードボタン(下記の丸い黄緑ボタン)が表示されています。
-このボタンをクリックすると、アイコンがチェックマークに変更されます。
-これで TubeEater の操作は完了です。
-
-後は、ブラウザから URL をコピーするだけで、YouTube のコンテンツが自動で取り込まれます。
-
-![TubeEater起動画面](https://github.com/sabakunotabito/tubeeater/blob/images/TubeEater01.png)
-
-
-# 参考
-
-TubeEater の開発過程はブログに掲載されています。
-
-- [【C#】YouTube からビデオとオーディオをダウンロードするアプリを作ってみる - その1](https://sabakunotabito.hatenablog.com/entry/2022/02/28/012442)
-
-
-# 謝辞
-
-TubeEater は、以下のライブラリを利用しています。各ライブラリを公開して頂いた方々に深く感謝申し上げます。
-
-- [MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
-- [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit)
-- [VideoLibrary](https://github.com/omansak/libvideo)
-- [NAudio](https://github.com/naudio/NAudio)
-- [TagLibSharp](https://github.com/mono/taglib-sharp)
-- [NLog](https://nlog-project.org/)
+*   [MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
+*   [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit)
+*   [VideoLibrary](https://github.com/omansak/libvideo) (libvideo)
+*   [NAudio](https://github.com/naudio/NAudio)
+*   [TagLibSharp](https://github.com/mono/taglib-sharp)
+*   [NLog](https://nlog-project.org/)
